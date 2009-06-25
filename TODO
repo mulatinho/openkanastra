@@ -1,0 +1,9 @@
+TODO
+
+* Catch new cards after put all user cards in table (DEAD CARDS/MORTO)
+* Count points of cards after put them in table
+* Take off discarded card of user in LEFTCARD command
+* Take off discarded card of user in MOVEHAND command
+* Put all code in LIBNET, Pthreads-WIN32 and Visual C++
+* Make users come back in the game after disconnect
+* Verify if user close game after put a command

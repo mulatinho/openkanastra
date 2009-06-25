@@ -1,0 +1,189 @@
+(gdb) r
+Starting program: /home/crudo/projects/buraco/buraco 
+[Thread debugging using libthread_db enabled]
+*SERVER* waiting for events..
+*SERVER* the ip *127.0.0.1* connect in the server with fd *7* as anonymous..
+*COMMAND* user id *7* type *AUTHUSER* command.
+*COMMAND* user id *7* type *USERJOIN* command.
+*GAME ROOM* user *crudo* create *room 1* with password *Jizz*
+*SERVER* the ip *127.0.0.1* connect in the server with fd *8* as anonymous..
+*COMMAND* user id *8* type *AUTHUSER* command.
+*COMMAND* user id *8* type *USERJOIN* command.
+*GAME ROOM* the game will begin in five seconds..
+baralho[000]:Th ==> 037
+baralho[001]:8s ==> 097
+baralho[002]:2c ==> 039
+baralho[003]:Js ==> 100
+baralho[004]:5C ==> 016
+baralho[005]:JH ==> 003
+baralho[006]:QC ==> 023
+baralho[007]:2D ==> 052
+baralho[008]:9S ==> 072
+baralho[009]:Kh ==> 031
+baralho[010]:Kc ==> 050
+baralho[011]:Qd ==> 088
+baralho[012]:4c ==> 041
+baralho[013]:8S ==> 071
+baralho[014]:3d ==> 079
+baralho[015]:JD ==> 061
+baralho[016]:Jd ==> 087
+baralho[017]:7S ==> 070
+baralho[018]:c2 ==> 107
+baralho[019]:8C ==> 019
+baralho[020]:Qh ==> 030
+baralho[021]:5d ==> 081
+baralho[022]:Td ==> 086
+baralho[023]:2S ==> 065
+baralho[024]:Ks ==> 102
+baralho[025]:C2 ==> 105
+baralho[026]:C1 ==> 104
+baralho[027]:5H ==> 010
+baralho[028]:8h ==> 035
+baralho[029]:9s ==> 098
+baralho[030]:7s ==> 096
+baralho[031]:3h ==> 027
+baralho[032]:Jh ==> 038
+baralho[033]:QS ==> 075
+baralho[034]:Ac ==> 051
+baralho[035]:KC ==> 024
+baralho[036]:3C ==> 014
+baralho[037]:AH ==> 006
+baralho[038]:Qs ==> 101
+baralho[039]:KS ==> 076
+baralho[040]:8c ==> 045
+baralho[041]:AD ==> 064
+baralho[042]:5h ==> 029
+baralho[043]:TH ==> 002
+baralho[044]:9d ==> 085
+baralho[045]:AS ==> 077
+baralho[046]:c1 ==> 106
+baralho[047]:7h ==> 034
+baralho[048]:TC ==> 021
+baralho[049]:2d ==> 078
+baralho[050]:6S ==> 069
+baralho[051]:KH ==> 005
+baralho[052]:9H ==> 001
+baralho[053]:6H ==> 011
+baralho[054]:3S ==> 066
+baralho[055]:7H ==> 012
+baralho[056]:7d ==> 083
+baralho[057]:3s ==> 092
+baralho[058]:Ts ==> 099
+baralho[059]:8d ==> 084
+baralho[060]:2h ==> 026
+baralho[061]:9C ==> 020
+baralho[062]:4h ==> 028
+baralho[063]:3H ==> 008
+baralho[064]:4D ==> 054
+baralho[065]:6D ==> 056
+baralho[066]:6s ==> 095
+baralho[067]:7c ==> 044
+baralho[068]:JC ==> 022
+baralho[069]:5S ==> 068
+baralho[070]:9D ==> 059
+baralho[071]:Qc ==> 049
+baralho[072]:2s ==> 091
+baralho[073]:As ==> 103
+baralho[074]:3D ==> 053
+baralho[075]:Kd ==> 089
+baralho[076]:4s ==> 093
+baralho[077]:5D ==> 055
+baralho[078]:KD ==> 063
+baralho[079]:QH ==> 004
+baralho[080]:Tc ==> 047
+baralho[081]:5c ==> 042
+baralho[082]:9h ==> 036
+baralho[083]:4d ==> 080
+baralho[084]:9c ==> 046
+baralho[085]:7D ==> 057
+baralho[086]:6d ==> 082
+baralho[087]:8D ==> 058
+baralho[088]:TS ==> 073
+baralho[089]:AC ==> 025
+baralho[090]:5s ==> 094
+baralho[091]:6C ==> 017
+baralho[092]:6h ==> 033
+baralho[093]:Ah ==> 032
+baralho[094]:QD ==> 062
+baralho[095]:TD ==> 060
+baralho[096]:Jc ==> 048
+baralho[097]:7C ==> 018
+baralho[098]:4C ==> 015
+baralho[099]:4S ==> 067
+baralho[100]:4H ==> 009
+baralho[101]:JS ==> 074
+baralho[102]:3c ==> 040
+baralho[103]:2C ==> 013
+baralho[104]:6c ==> 043
+baralho[105]:Ad ==> 090
+baralho[106]:2H ==> 007
+baralho[107]:8H ==> 000
+RESUME: (roomid:01) (points red:000/blue:000)
+
+TOTAL CARDS: [face:Th value:037] [face:8s value:097] [face:2c value:039] [face:Js value:100] [face:5C value:016] [face:JH value:003] [face:QC value:023] [face:2D value:052] [face:9S value:072] [face:Kh value:031] [face:Kc value:050] [face:Qd value:088] [face:4c value:041] [face:8S value:071] [face:3d value:079] [face:JD value:061] [face:Jd value:087] [face:7S value:070] [face:c2 value:107] [face:8C value:019] [face:Qh value:030] [face:5d value:081] [face:Td value:086] [face:2S value:065] [face:Ks value:102] [face:C2 value:105] [face:C1 value:104] [face:5H value:010] [face:8h value:035] [face:9s value:098] [face:7s value:096] [face:3h value:027] [face:Jh value:038] [face:QS value:075] [face:Ac value:051] [face:KC value:024] [face:3C value:014] [face:AH value:006] [face:Qs value:101] [face:KS value:076] [face:8c value:045] [face:AD value:064] [face:5h value:029] [face:TH value:002] [face:9d value:085] [face:AS value:077] [face:c1 value:106] [face:7h value:034] [face:TC value:021] [face:2d value:078] [face:6S value:069] [face:KH value:005] [face:9H value:001] [face:6H value:011] [face:3S value:066] [face:7H value:012] [face:7d value:083] [face:3s value:092] [face:Ts value:099] [face:8d value:084] [face:2h value:026] [face:9C value:020] [face:4h value:028] [face:3H value:008] [face:4D value:054] [face:6D value:056] [face:6s value:095] [face:7c value:044] [face:JC value:022] [face:5S value:068] [face:9D value:059] [face:Qc value:049] [face:2s value:091] [face:As value:103] [face:3D value:053] [face:Kd value:089] [face:4s value:093] [face:5D value:055] [face:KD value:063] [face:QH value:004] [face:Tc value:047] [face:5c value:042] [face:9h value:036] [face:4d value:080] [face:9c value:046] [face:7D value:057] [face:6d value:082] [face:8D value:058] [face:TS value:073] [face:AC value:025] [face:5s value:094] [face:6C value:017] [face:6h value:033] [face:Ah value:032] [face:QD value:062] [face:TD value:060] [face:Jc value:048] [face:7C value:018] [face:4C value:015] [face:4S value:067] [face:4H value:009] [face:JS value:074] [face:3c value:040] [face:2C value:013] [face:6c value:043] [face:Ad value:090] [face:2H value:007] [face:8H value:000] 
+
+Player 1: [face:Th value:037] [face:8s value:097] [face:2c value:039] [face:Js value:100] [face:5C value:016] [face:JH value:003] [face:QC value:023] [face:2D value:052] [face:9S value:072] [face:Kh value:031] [face:Kc value:050] 
+Player 2: [face:Qd value:088] [face:4c value:041] [face:8S value:071] [face:3d value:079] [face:JD value:061] [face:Jd value:087] [face:7S value:070] [face:c2 value:107] [face:8C value:019] [face:Qh value:030] [face:5d value:081] 
+
+Morto 1: Td 2S Ks C2 C1 5H 8h 9s 7s 3h Jh 
+Morto 2: QS Ac KC 3C AH Qs KS 8c AD 5h TH 
+
+Table Cards: [face:9d value:85][face:AS value:77][face:c1 value:106][face:7h value:34][face:TC value:21][face:2d value:78][face:6S value:69][face:KH value:5][face:9H value:1][face:6H value:11][face:3S value:66][face:7H value:12][face:7d value:83][face:3s value:92][face:Ts value:99][face:8d value:84][face:2h value:26][face:9C value:20][face:4h value:28][face:3H value:8][face:4D value:54][face:6D value:56][face:6s value:95][face:7c value:44][face:JC value:22][face:5S value:68][face:9D value:59][face:Qc value:49][face:2s value:91][face:As value:103][face:3D value:53][face:Kd value:89][face:4s value:93][face:5D value:55][face:KD value:63][face:QH value:4][face:Tc value:47][face:5c value:42][face:9h value:36][face:4d value:80][face:9c value:46][face:7D value:57][face:6d value:82][face:8D value:58][face:TS value:73][face:AC value:25][face:5s value:94][face:6C value:17][face:6h value:33][face:Ah value:32][face:QD value:62][face:TD value:60][face:Jc value:48][face:7C value:18][face:4C value:15][face:4S value:67][face:4H value:9][face:JS value:74][face:3c value:40][face:2C value:13][face:6c value:43][face:Ad value:90][face:2H value:7]
+[New Thread 0xb7ef86c0 (LWP 32631)]
+[New Thread 0xb7ef7b90 (LWP 32671)]
+RESUME: room->roomid:1 uidx->roomid:1 ridx->id:1
+RESUME: nick:crudo who_is:0
+
+buraco_get_table_card() init
+buraco_get_table_card() end
+in *room 1* command is *GETNCARD*
+----debug: garbage[0]-> card:3 who:100 BARALHO[card]:JH p1[card]:Js
+RESUME: room->roomid:1 uidx->roomid:1 ridx->id:1
+RESUME: nick:esc2 who_is:1
+
+
+
+
+crudo@infinitus:~/projects/buraco$ telnet localhost 16666
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+AUTHUSER crudo lindju
+*AUTH* You are successfully identified! Welcome crudo!
+USERJOIN 1 Jizz
+*GAME ROOM* user *crudo* create *room 1* with password *Jizz*
+*GAME ROOM* user *esc2* join in *room 1*
+*GAME ROOM* the game will begin in five seconds..
+*Your cards* Th 8s 2c Js 5C JH QC 2D 9S Kh Kc 
+*GARBA*NO GROUPS OF CARDS YET*
+*turn* its time to *crudo* do an action...
+*Your cards* Th 8s 2c Js 5C JH QC 2D 9S Kh Kc 
+COMMANDS are: USERCARD, MOVEHAND, GETNCARD or NEXTPLAY
+$ GETNCARD 1
+*GAME* you got a new card *2H*
+COMMANDS are: USERCARD, MOVEHAND, GETNCARD or NEXTPLAY
+$ LEFTCARD Js
+*GAME* user *crudo* move card(s) *Js* to garbage.
+*GARBAJs *NO GROUPS OF CARDS YET*
+*turn* its time to *esc2* do an action...
+
+
+
+crudo@infinitus:~/projects/buraco$ telnet localhost 16666
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+AUTHUSER esc2 feio
+*AUTH* You are successfully identified! Welcome esc2!
+USERJOIN 1 Jizz
+*GAME ROOM* user *esc2* join in *room 1*
+*GAME ROOM* the game will begin in five seconds..
+*Your cards* Qd 4c 8S 3d JD Jd 7S c2 8C Qh 5d 
+*GARBA*NO GROUPS OF CARDS YET*
+*turn* its time to *crudo* do an action...
+*GAME* user *crudo* move card(s) *Js* to garbage.
+*GARBAJs *NO GROUPS OF CARDS YET*
+*turn* its time to *esc2* do an action...
+*Your cards* Qd 4c 8S 3d JD Jd 7S c2 8C Qh 5d 
+COMMANDS are: USERCARD, MOVEHAND, GETNCARD or NEXTPLAY
+$ 

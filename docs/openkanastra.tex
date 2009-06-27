@@ -1,0 +1,146 @@
+\documentclass{beamer}
+\usepackage{graphicx,url,verbatim,fancyvrb,ifpdf}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[brazil]{babel}
+\mode<presentation>
+{ \usetheme{Warsaw} }
+
+\title[OpenKanastra - Servidor do jogo]{OpenKanastra}
+\author{Alexandre Mulatinho\\\small{alex@mulatinho.net}}
+\institute{ITZA Studios}
+
+\begin{document}
+
+\maketitle
+
+\begin{frame}
+  \frametitle{OpenKanastra}
+  \framesubtitle{Conceitos básicos do serviço}
+\begin{itemize}
+  \item<1-> Servidor TCP/IP.
+  \item<1-> Simples, rápido e eficiente.
+  \item<1-> Consome pouca CPU e principalmente pouca memória.
+  \item<1-> Comandos básicos e simples entre o usuário e o servidor.
+  \item<2-> C ANSI, documentado para qualquer programador entender.
+  \item<2-> Altamente escalável, inicialmente feito para trezentos usuários e cem salas.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos Básicos}
+  \framesubtitle{Comandos padrões entre o cliente e servidor}
+  \begin{block}{AUTHUSER}
+    Comando para autenticar o usuário no servidor OpenKanastra, este deve
+    ser o primeiro comando a ser executado pelo cliente ou então ele não
+    poderá utilizar os demais.
+  \end{block}
+  \begin{alertblock}{Sintaxe básica}
+    AUTHUSER <USERNAME> <PASSWORD>
+    \begin{itemize}
+	\item<1-> \small\textbf{USERNAME} - Login do usuário.
+	\item<1-> \small\textbf{PASSWORD} - Senha do usuário.
+    \end{itemize}
+  \end{alertblock}
+  \begin{exampleblock}{Exemplo}
+    \textbf{AUTHUSER fernando abelha221}\\
+    \small Autentica o usuário \textit{fernando} com a senha \textit{abelha221} no servidor.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos Básicos}
+  \framesubtitle{Comandos padrões entre o cliente e servidor}
+  \begin{block}{ROOMLIST}
+    Lista todas as salas do servidor, retornando ao cliente não só as salas
+    disponíveis para entrar e jogar mas também as cheias com jogos em andamento.
+  \end{block}
+  \begin{alertblock}{Sintaxe básica}
+    ROOMLIST [ROOM NUMBER]
+    \begin{itemize}
+	\item<1-> \small\textbf{ROOM NUMBER} - Se digitado como argumento, lista apenas os 
+                  usuários da sala específica, sem argumentos lista todas as salas.
+    \end{itemize}
+  \end{alertblock}
+  \begin{exampleblock}{Exemplos}
+    \textbf{ROOMLIST 23}\\
+    \small Lista todos os usuários apenas da sala 23.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos Básicos}
+  \framesubtitle{Comandos padrões entre o cliente e servidor}
+  \begin{block}{USERLIST}
+    Lista a quantidade de usuários conectados neste momento no servidor.
+  \end{block}
+  \begin{exampleblock}{Exemplos}
+    \textbf{USERLIST}\\
+    \small Lista todos usuários que estão no jogo.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos Básicos}
+  \framesubtitle{Comandos padrões entre o cliente e servidor}
+  \begin{block}{USERJOIN}
+    Enviado sempre que um usuário quiser entrar em uma sala para jogar contra
+    outros usuários ou então iniciar uma nova sala.
+  \end{block}
+  \begin{alertblock}{Sintaxe básica}
+    USERJOIN <ROOM NUMBER> [PASSWORD]
+    \begin{itemize}
+	\item<1-> \small\textbf{ROOM NUMBER} - Entra na sala especificada pelo usuário, esta
+                  sala precisa ser um número existente ou um novo para ser criado.
+	\item<1-> \small\textbf{PASSWORD} - Se colocado no comando, setará uma senha de entrada
+                  ou criação da sala, se não for setado criará ou entrará numa sala sem password.
+    \end{itemize}
+  \end{alertblock}
+  \begin{exampleblock}{Exemplos}
+    \textbf{USERJOIN 1 Richard}\\
+    \small Cria ou entra numa sala privada onde a senha deverá ser \textbf{Richard}.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemplo de Jogo, Parte I}
+  \framesubtitle{Conversação entre cliente e o servidor até a entrada numa sala}
+  \begin{block}{Autenticando e Entrando em uma sala}
+    \small S: Welcome to OpenKanastra\\
+    C: Hello WOrld\\
+    S: UNKNOWN COMMAND\\
+    C: AUTHUSER user1 pass1\\
+    S: *AUTH* You are now recognized. Welcome user1!\\
+    C: ROOMLIST\\
+    S: 1-32,123,7,67 2-14,91,188,201 3-177,0,0,0\\
+    C: USERJOIN 3\\
+    S: *AUTH* Wrong password!\\
+    C: USERJOIN 3 EstPassword\\
+    S: *GAME ROOM* user *user1* join in the game
+  \end{block}
+  \tiny\textbf{Legenda: C}=Cliente, \textbf{S}=Servidor
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemplo de Jogo, Parte 2}
+  \framesubtitle{Conversação entre cliente e o servidor durante um jogo}
+  \begin{alertblock}{Definição básica}
+    Quando iniciado um jogo o servidor cria um thread e este thread fica responsável
+    pela partida entre os usuários deixando o servidor independente da partida.
+  \end{alertblock}
+  \begin{block}{Loop do game}
+    \small S: *GAME ROOM* turn changes, its time to *user1* do an action..\\
+    \tiny{The user see his cards and use these commands: GETNCARD, MOVEHAND, LEFTCARD}\\
+    \small C: GETNCARD 1\\
+    S: *GAME* You got a new card *Kh*\\
+    C: MOVEHAND 9h,Th,Jh,Qh,Kh 1\\
+    S: *GAME ROOM* user *user1* move *9h,Th,Jh,Qh,Kh* to table.\\
+    C: LEFTCARD 3c\\
+    S: *GAME ROOM* user *user1* discarded card *3c* to the room.\\
+    S: *GAME ROOM* turn changes, its time to *user1* do an action..\\
+    \tiny{Now the next user see his cards and use the same commands}
+  \end{block}
+  \tiny\textbf{Legenda: C}=Cliente, \textbf{S}=Servidor
+\end{frame}
+
+\end{document}

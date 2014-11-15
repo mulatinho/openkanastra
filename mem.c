@@ -3,13 +3,18 @@
 struct CARDS *
 buraco_mem_get_gcards(int roomid, int group, int games)
 {
-	struct CARDS *tmp;
+	struct CARDS *aux;
 
-	tmp = cfst;
-	while (tmp!=NULL && tmp->roomid==roomid && tmp->group==group && tmp->id==games)
-		tmp = tmp->next;
+	aux = cfst;
+	while (aux!=NULL)
+	{
+		if (aux->roomid!=roomid || aux->group!=group || aux->id!=games)
+			aux = aux->next;
+		else
+			break;
+	}
 
-	return tmp;
+	return aux;
 }
 
 struct ROOM * 
@@ -53,9 +58,14 @@ buraco_mem_del_user(int userid)
 {
 	struct USER_idx *temp=NULL, *tmp=NULL, *aux=NULL;
 	
+	if (!uidx_fst)
+		return 0;
+		
 	if (uidx_fst->userid == userid) {
 		temp = uidx_fst->next;
+		memset(uidx_fst->nick, 0, sizeof(uidx_fst->nick));
 		free(uidx_fst);
+		uidx_fst = NULL;
 		uidx_fst = temp;
 		return 0;
 	}
@@ -69,8 +79,9 @@ buraco_mem_del_user(int userid)
 	if (aux) {
 		temp = aux;
 		tmp->next = aux->next;
-
+		memset(temp->nick, 0, sizeof(temp->nick));
 		free(temp);			
+		temp = NULL;
 		return 0;
 	}
 
@@ -78,13 +89,53 @@ buraco_mem_del_user(int userid)
 } 
 
 int 
+buraco_mem_del_gcards(int roomid, int group, int id)
+{
+	struct CARDS *temp=NULL, *tmp=NULL, *aux=NULL;
+	
+	if (!cfst)
+		return 0;
+
+	if (cfst->roomid == roomid && cfst->group == group && cfst->id == id) 
+	{	
+		temp = cfst->next;
+		free(cfst);
+		cfst = NULL;
+		cfst = temp;
+		return 0;
+	}
+		
+	aux = cfst;
+	while (aux!=NULL && (aux->roomid != roomid || aux->group == group || aux->id == id)) 
+	{
+		tmp = aux;
+		aux = aux->next;			
+	}
+
+	if (aux) {
+		temp = aux;
+		tmp->next = aux->next;
+
+		free(temp);
+		temp = NULL;
+		return 0;
+	}
+
+	return -1;
+}
+
+int 
 buraco_mem_del_room(int roomid)
 {
 	struct ROOM_idx *temp=NULL, *tmp=NULL, *aux=NULL;
 	
+	if (!ridx_fst)
+		return 0;
+
 	if (ridx_fst->id == roomid) {
 		temp = ridx_fst->next;
 		free(ridx_fst);
+		ridx_fst = NULL;
 		ridx_fst = temp;
 		return 0;
 	}
@@ -99,7 +150,8 @@ buraco_mem_del_room(int roomid)
 		temp = aux;
 		tmp->next = aux->next;
 
-		free(temp);			
+		free(temp);
+		temp = NULL;
 		return 0;
 	}
 
@@ -111,9 +163,13 @@ buraco_mem_del_game(int roomid)
 {
 	struct ROOM *temp=NULL, *tmp=NULL, *aux=NULL;
 	
+	if (!rfst)
+		return 0;
+
 	if (rfst->roomid == roomid) {
 		temp = rfst->next;
 		free(rfst);
+		rfst = NULL;
 		rfst = temp;
 		return 0;
 	}
@@ -128,7 +184,8 @@ buraco_mem_del_game(int roomid)
 		temp = aux;
 		tmp->next = aux->next;
 
-		free(temp);			
+		free(temp);
+		temp = NULL;		
 		return 0;
 	}
 
@@ -159,11 +216,6 @@ buraco_mem_update_user_idx(int fd, char *nick, int auth, int roomid, int in_game
 
 			break;
 		}
-		else if (nick)
-		{
-			if (!strncmp(nick, vrf->nick, strlen(nick)))
-				is_online++;
-		} 
 
 		vrf = vrf->next;
 	}
@@ -173,9 +225,11 @@ buraco_mem_update_user_idx(int fd, char *nick, int auth, int roomid, int in_game
 		new->auth = auth;
 		new->userid = fd;
 		new->roomid = roomid;
+		new->inGame = 0;
+		new->timeout = 0;
 
-		if (nick)
-			strcpy(vrf->nick, nick);
+		new->nick[0] = '\0';
+
 
 		new->next = NULL;
 
@@ -204,7 +258,7 @@ buraco_mem_update_user_idx(int fd, char *nick, int auth, int roomid, int in_game
 }
 
 int
-buraco_mem_update_gcards(int roomid, int group, int subgroup)
+buraco_mem_add_gcards(int roomid, int group, int subgroup)
 {
 	struct CARDS *new = malloc(sizeof(struct CARDS));
 	struct CARDS *aux, *tmp;
@@ -213,6 +267,7 @@ buraco_mem_update_gcards(int roomid, int group, int subgroup)
 	new->roomid = roomid;
 	new->group = group;
 	new->id = subgroup;
+	new->suit = 0;
 
 	for (i=0;i<SZ_NAIPE;i++)
 		new->cards[i] = -1;
@@ -244,7 +299,7 @@ buraco_mem_create_room_idx(int roomid, int players, char *pass)
 
 	new->id = roomid;
 	new->players = players;
-	new->inGame = 0;
+	new->inGame = 0; new->turn = 0; new->dead_cards = 0;
 	new->users[0] = 0; new->users[1] = 0; new->users[2] = 0; new->users[3] = 0;
 
 	if (pass)
@@ -276,13 +331,11 @@ buraco_mem_count_room(int roomid)
 {
 	struct ROOM_idx *aux;
 	int loop=0;
-	fprintf(stdout, "buraco_mem_count_room() init\n");
 
 	aux = buraco_mem_get_room(roomid);
-	while (aux->users[loop] != 0)
+	while (aux!=NULL && aux->users[loop]!=0)
 		loop++;
 
-	fprintf(stdout, "buraco_mem_count_room() end\n");
 	return loop;
 }
 
@@ -295,31 +348,28 @@ buraco_mem_user_join_room(int roomid, int userid, char *pass)
 	char ret[SZ_STRING_MAX];
 
 	aux = buraco_mem_get_room(roomid);
+	if (!aux)
+		return -1;
 
 	if (aux)
 	{
 		nplayers = buraco_mem_count_room(roomid);
-		if (nplayers == aux->players)
+		if (nplayers >= aux->players)
 		{
 			snprintf(ret, sizeof(ret)-1, "*error* the room is full and the game is already running..\n\0");
 			send(userid, ret, strlen(ret), 0);
 			return -1;
 		}
-		else if (nplayers < aux->players)
+			
+		while (loop < aux->players)
 		{
-			while (loop<4)
-			{
-				if (aux->users[loop] == userid)
-					exists++;
+			if (aux->users[loop] == userid)
+				exists++;
 
-				if (!aux->users[loop])
-					break;
-				else
-				{
-					loop++; 
-					break;
-				}
-			}
+			if (!aux->users[loop])
+				break;
+
+			loop++; 
 		}
 	}
 
@@ -338,27 +388,28 @@ buraco_mem_user_join_room(int roomid, int userid, char *pass)
 	}
 	else
 	{
-		if (!pass && !strlen(aux->passphrase))
-		{
-			pass=NULL;
-			test++;
-		}
-		
-		fprintf(stdout, "BREAKPOINT HERE\n");
-		if (!test)
+		if (pass!=NULL && strlen(aux->passphrase)>0)
 		{
 			if (!strncmp(aux->passphrase, pass, strlen(aux->passphrase)))
 				test++;
 			else
 			{
-				snprintf(ret, sizeof(ret)-1, "*ERROR* wrong password!\n");
+				snprintf(ret, sizeof(ret)-1, "*AUTH* wrong username or password!\n");
 				send(userid, ret, strlen(ret), 0);
-				test = 0;
+
 				return -1;
 			}
 		}
-		fprintf(stdout, "BREAKPOINT END HERE\n");
-	
+		else if (!pass && !strlen(aux->passphrase))
+			test++;
+		else
+		{
+			snprintf(ret, sizeof(ret)-1, "*AUTH* Error, wrong username or password!\n");
+			send(userid, ret, strlen(ret), 0);
+
+			return -1;
+		}
+			
 		if (test)
 		{
 			tmp->roomid = roomid;
@@ -375,9 +426,11 @@ buraco_mem_user_join_room(int roomid, int userid, char *pass)
 				buraco_message_to_room(tmp->roomid, ret);
 			}
 		}
-
+		
 		return 0;
 	}
+
+	return 0;
 }
 
 struct ROOM * 

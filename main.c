@@ -6,7 +6,7 @@ strkey(char *buf, int who, short del)
     char *str = (char*)malloc(strlen(buf));
     short ch, i, f=0, x=0, loop=0;
 
-    for (i=0;i<strlen(buf);i++) {
+    for (i=0;i<(int)strlen(buf);i++) {
         ch = *(buf+i);
 
         if (ch==del && !i && !who)
@@ -31,18 +31,19 @@ int
 buraco_message_to_room(int roomid, char *message)
 {
 	struct ROOM_idx *aux;
-	int loop=0;
+	int loop;
 
-	aux = buraco_mem_get_room(roomid);
-
+	usleep(7); aux = buraco_mem_get_room(roomid);
 	if (aux)
 	{
-		while (aux->users[loop] && loop<4)
+		for (loop=0;loop<BURACO_USERS_PER_TABLE;loop++)
 		{
-			send(aux->users[loop], message, strlen(message), 0);
-			loop++;
+			if (aux->users[loop] != 0)
+				send(aux->users[loop], message, strlen(message), 0);
 		}
 	}
+
+	return 0;
 }
 
 void *
@@ -57,7 +58,7 @@ buraco_user_list(int fd, char **args)
 	uidx = uidx_fst;
 	while (uidx)
 	{
-		fprintf(stdout, "ID:%d NICKNAME:%s\n\0", uidx->userid, uidx->nick);
+		fprintf(stdout, "ID:%d NICKNAME:%s InGAME:%d ROOMID:%d\n\0", uidx->userid, uidx->nick, uidx->inGame, uidx->roomid);
 
 		uidx = uidx->next;
 		users++;
@@ -65,16 +66,17 @@ buraco_user_list(int fd, char **args)
 
 	snprintf(ret, sizeof(ret)-1, "Total users: %d\n\0", users);
 	send(fd, ret, strlen(ret), 0);
+
+	return 0;
 }
 
 void *
 buraco_room_list(int fd, char **args)
 {
 	char ret[SZ_STRING_MID];
-	struct ROOM_idx *rindex, *aux;
+	struct ROOM_idx *aux;
 	int room;
 
-	memset(ret, '\0', sizeof(ret));
 	if (!args[1])
 		room = 0;
 	else
@@ -95,7 +97,7 @@ buraco_room_list(int fd, char **args)
 				aux->id, aux->users[0], aux->users[1], aux->users[2], aux->users[3]);
 
 			send(fd, ret, strlen(ret), 0);
-			memset(ret, '\0', sizeof(ret));
+			memset(&ret, 0, sizeof(ret));
 			aux = aux->next;
 		}
 		
@@ -118,25 +120,27 @@ buraco_room_list(int fd, char **args)
 		}
 
 	}
+
 }
 
 int 
-buraco_user_part(int userid)
+buraco_user_part(int userid, char **args)
 {
 	struct ROOM_idx *aux;
 	struct USER_idx *usr;
-	int loop=0, confirm=0;
+	int loop=0;
 
-	fprintf(stdout, "buraco_user_part() init \n");
+	usr = NULL;
 	usr = buraco_mem_get_user(userid);
-	fprintf(stdout, "id:%.3d inGame:%d\n", usr->userid, usr->inGame);
-
 	if (usr)
 	{
-		usr->roomid = 0; usr->inGame = 0;
-		confirm++;
+		usr->roomid = 0; 
+		usr->inGame = 0;
 	}
+	else
+		return -1;
 
+	aux = NULL;
 	aux = buraco_mem_get_room(usr->roomid);
 	if (aux)
 	{
@@ -145,16 +149,16 @@ buraco_user_part(int userid)
 			if (aux->users[loop] == userid)
 			{
 				aux->users[loop] = 0;
-				loop++; confirm++; break;
+				fprintf(stdout, "FIND HIM AND CLOSE HIM..\n");
 			}
+
+			loop++;
 		}
 	}
-
-	fprintf(stdout, "buraco_user_part() end \n");
-	if (confirm==2)
-		return 0;
 	else
 		return -1;
+
+	return 0;
 }
 
 void *
@@ -162,12 +166,8 @@ buraco_user_join(int fd, char **args)
 {
 	struct USER_idx *uidx;
 	struct ROOM_idx *ridx;
-	struct ROOM *ROOM;
-	int userid, roomid, nplayers;
-	char password[SZ_STRING_MIN];
+	int nplayers, roomid;
 	char ret[SZ_STRING_MAX];
-
-	memset(ret, '\0', sizeof(ret));
 
 	if (!args[1])
 	{
@@ -210,14 +210,10 @@ buraco_user_join(int fd, char **args)
 							if (!ridx->inGame)
 							{
 								snprintf(ret, sizeof(ret)-1, "*GAME ROOM* the game will begin in five seconds..\n\0");
-								buraco_message_to_room(roomid, ret); sleep(5);
 								buraco_mem_init_game(roomid, ridx->players);
 							}
 							else
-							{
-								snprintf(ret, sizeof(ret)-1, "*GAME ROOM* the user *%s* get back in the game..\n\0", uidx->nick);
-								buraco_message_to_room(roomid, ret); sleep(5);
-							}
+								snprintf(ret, sizeof(ret)-1, "*GAME ROOM* the user *%s* try to join in the game..\n\0", uidx->nick);
 
 							buraco_message_to_room(roomid, ret);
 							fprintf(stdout, "%s", ret);
@@ -248,6 +244,18 @@ buraco_user_auth(int userfd, char *user, char *pass)
 	else if (!strcmp(user, "yzak") && !strcmp(pass, "ramps"))
 		auth++;
 	else if (!strcmp(user, "borracho") && !strcmp(pass, "pinguim"))
+		auth++;
+	else if (!strcmp(user, "user1") && !strcmp(pass, "user1"))
+		auth++;
+	else if (!strcmp(user, "user2") && !strcmp(pass, "user2"))
+		auth++;
+	else if (!strcmp(user, "user3") && !strcmp(pass, "user3"))
+		auth++;
+	else if (!strcmp(user, "user4") && !strcmp(pass, "user4"))
+		auth++;
+	else if (!strcmp(user, "user5") && !strcmp(pass, "user5"))
+		auth++;
+	else if (!strcmp(user, "user6") && !strcmp(pass, "user6"))
 		auth++;
 
 	if (!auth)
@@ -305,16 +313,18 @@ buraco_check_auth(int userfd, char **args)
 int
 buraco_interpret(int userfd, char *buf)
 {
-	char ret[SZ_STRING_MAX];
 	char *args[4];
 	int i, z, total;
+	char ret[SZ_STRING_MAX];
 
 	struct command commands[] = {
 		{ "AUTHUSER", (void*)&buraco_check_auth },
 		{ "ROOMLIST", (void*)&buraco_room_list },
 		{ "USERJOIN", (void*)&buraco_user_join },
-		{ "USERLIST", (void*)&buraco_user_list }
-//		{ "USERPART", (void*)&buraco_user_part }
+		{ "USERLIST", (void*)&buraco_user_list },
+		{ "USERPART", (void*)&buraco_user_part }
+//		{ "GAMECARD", (void*)&buraco_room_cards }
+//		{ "GMPOINTS", (void*)&buraco_room_points }
 	};
 
 	if (!buf || !strlen(buf))
@@ -328,34 +338,64 @@ buraco_interpret(int userfd, char *buf)
 	if (!buraco_check_auth(userfd, args))
 		return -1;
 
+	if (!args[0])
+		return -1;
+
 	total = sizeof(commands) / sizeof(commands[0]);
 	for (i=0;i<total;i++)
 	{
 		if (!strncmp(commands[i].name, args[0], strlen(commands[i].name)))
 		{
-			fprintf(stderr, "*COMMAND* user id *%d* type *%s* command.\n", userfd, commands[i].name);
+			fprintf(stderr, "*COMMAND* user id *%d* type *%s* command.\n", userfd, buf);
 			commands[i].func(userfd, args); z++;
 		}
 	}
 
 	if (!z)
-		fprintf(stderr, "*UNKNOWN COMMAND* user id *%d* type *%s* command.\n", userfd, commands[i].name);
+	{
+		fprintf(stdout, "*UNKNOWN COMMAND* user id *%d* type *%s* command.\n", userfd, buf);
+		snprintf(ret, sizeof(ret)-1, "*UNKNOWN COMMAND*\n");
+		send(userfd, ret, strlen(ret), 0);
+	}
 
 	return 0;
 }
 
+char *
+buraco_strings_clean(char *string)
+{
+	int i, x;
+	char *ret = malloc(strlen(string));
+
+	x = 0;
+	for (i=0; i<(int)strlen(string);i++)
+	{
+		if ((string[i] >= 48 && string[i] <= 57) || (string[i] >= 65 && string[i] <= 90) || (string[i] >= 97 && string[i] <= 122) || string[i]==32)
+		{
+			*(ret+x) = *(string+i);
+			x++;
+		}
+	}
+
+	*(ret+x) = '\0';
+	ret=(char*)realloc(ret,x);
+
+	return ret;
+}
 
 int 
 main(void)
 {
-	int ret, soq, newsoq;
+	int vrf, ret, soq, newsoq;
 	int rbytes, users, smax;
 	char buf[SZ_STRING_MAX];
 	struct sockaddr_in server, client;
 	struct pollfd serverpoll[BURACO_USERS];
 	struct USER_idx *uidx;
+	char *ptrbuf;
+	fd_set slave, master;
 		
-	ret = 0; users = 0; smax = 0;
+	ret = 0; users = 0; smax = 0; vrf = 0;
 
 	server.sin_port = htons(BURACO_PORT);
 	server.sin_family = AF_INET;
@@ -370,19 +410,24 @@ main(void)
 
 	listen(soq, BURACO_USERS);
 
-	serverpoll[0].fd = soq;
-	serverpoll[0].events = POLLIN;
+
+	//serverpoll[0].fd = soq;
+	//serverpoll[0].events = POLLIN;
+
+	FD_SET(soq, &master);
+	smax = soq;
 
 	fprintf(stderr, "*SERVER* waiting for events..\n");
 	while (1) {
-		ret = poll(serverpoll, smax+1, 0);
+		slave = master;
+		//ret = poll(serverpoll, smax+1, 0);
+		ret = select(smax+1, &slave, NULL, NULL, NULL);
 		if (ret < 0) {
-			fprintf(stderr, "poll: requested event failed!\n");
+			fprintf(stderr, "select: requested event failed!\n");
 			return -2;
 		}
 
 		for (users=0; users<=smax; users++) {
-
 			uidx = NULL;
 			uidx = buraco_mem_get_user(users);
 			if (uidx)
@@ -391,17 +436,20 @@ main(void)
 					continue;
 			}
 
-			if (serverpoll[users].revents & POLLIN) {
-				if (serverpoll[users].fd == serverpoll[0].fd) {
+			//fprintf(stdout, "\033[1muserid:%d loop:%d\033[m\n", serverpoll[users].fd, users);
+			//sleep(1);
+			if (FD_ISSET(users, &slave)) {
+				if (users == soq) {
 					socklen_t sizestr = sizeof(struct sockaddr);
-					if ((newsoq = accept(serverpoll[0].fd, (struct sockaddr *)&client, &sizestr)) == -1) {
+					if ((newsoq = accept(soq, (struct sockaddr *)&client, &sizestr)) == -1) {
 						fprintf(stderr, "accept: fuckin error!\n");
 						return -3;
 					}
-			
-					smax++;
-					serverpoll[smax].fd = newsoq;
-					serverpoll[smax].events = POLLIN;
+
+					FD_SET(newsoq, &master);
+					if (newsoq > soq)
+						smax = newsoq+1;
+
 					fprintf(stdout, "*SERVER* the ip *%s* connect in the server with fd *%d* as anonymous..\n",
 						inet_ntoa(client.sin_addr), serverpoll[smax].fd);
 
@@ -409,32 +457,42 @@ main(void)
 					snprintf(buf, sizeof(buf)-1, "Welcome to %s %s\n\0", BURACO_NAME, BURACO_VERSION);
 					send(newsoq, buf, strlen(buf), 0);
 				} else {
-					rbytes = read(serverpoll[users].fd, buf, sizeof(buf)-1);
+					rbytes = recv(users, buf, sizeof(buf)-1, 0);
 					if (!rbytes) {
-						uidx = buraco_mem_get_user(serverpoll[users].fd);
+						uidx = buraco_mem_get_user(users);
 						if (uidx)
 						{
 							fprintf(stdout, "*QUIT* user *%s* goes offline\n", uidx->nick);
 							//FIXME
 							//Verificar se ele criou algum canal, se criou remover.
-							buraco_user_part(uidx->userid);
-							buraco_mem_del_user(uidx->userid);
+						}
+						buraco_mem_del_user(uidx->userid);
+
+						FD_CLR(users, &master);
+						close(users);
+						
+						/*
+						for(vrf=0;vrf<=smax;vrf++)
+						{
+							if (serverpoll[vrf].fd == -1)
+							{
+								serverpoll[vrf].fd = serverpoll[vrf+1].fd;
+								serverpoll[vrf].revents = serverpoll[vrf+1].revents;
+								//users--;
+							}
 						}
 
-						close(serverpoll[users].fd);
-						serverpoll[users].fd = -1;
-						serverpoll[users].events = -1;
-
-						smax--;
+						smax--; */
 						fprintf(stdout, "*SERVER* the ip *%s* is closed the connection..\n", inet_ntoa(client.sin_addr));
 					}
 
 					if (rbytes) {
 						buf[rbytes - 2] = '\0';
-						buraco_interpret(serverpoll[users].fd, buf);
+						//ptrbuf = buraco_strings_clean(buf);
+						buraco_interpret(users, buf);
 					}
 					
-					memset(buf, 0, rbytes);
+					memset(&buf, 0, rbytes);
 					rbytes = 0;
 				}
 			}
